@@ -1,6 +1,7 @@
 package test;
 
 import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -13,9 +14,9 @@ import utils.TestData;
 public class AddToCartTest extends BaseTest {
 
     @Test
-    public void addProductToCart()
-            throws Exception {
+    public void addProductToCart() throws Exception {
 
+       
         RegisterPage registerPage =
                 new RegisterPage(driver);
 
@@ -30,6 +31,7 @@ public class AddToCartTest extends BaseTest {
 
         registerAlert.accept();
 
+       
         LoginPage loginPage =
                 new LoginPage(driver);
 
@@ -42,27 +44,45 @@ public class AddToCartTest extends BaseTest {
         ProductPage productPage =
                 new ProductPage(driver);
 
+        
+        String productNameOutside =
+                driver.findElement(
+                        By.linkText("Samsung galaxy s6"))
+                        .getText();
+
+        
+        String priceOutside =
+                driver.findElement(
+                        By.xpath("//a[text()='Samsung galaxy s6']/../../h5"))
+                        .getText();
+
         productPage.openSamsungProduct();
 
         Thread.sleep(2000);
 
-        productPage.addToCart();
+        String priceInside =
+                driver.findElement(
+                        By.className("price-container"))
+                        .getText();
 
-        Thread.sleep(2000);
+        
+        String descriptionInside =
+                driver.findElement(
+                        By.cssSelector("#more-information p"))
+                        .getText();
 
-        Alert cartAlert =
-                driver.switchTo().alert();
-
-        cartAlert.accept();
-
-        Thread.sleep(2000);
-
-        productPage.openCart();
-
-        Thread.sleep(3000);
+       
+        Assert.assertEquals(
+                priceOutside,
+                "$360");
 
         Assert.assertTrue(
-                driver.getPageSource()
-                        .contains("Samsung galaxy s6"));
-    }
+                priceInside.contains("$360"));
+
+        Assert.assertFalse(
+                descriptionInside.isEmpty());
+
+        Assert.assertTrue(
+                descriptionInside.contains("Samsung Galaxy S6"));
+}
 }
